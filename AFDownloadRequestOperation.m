@@ -31,6 +31,11 @@
 @property (readonly, nonatomic, assign) long long totalBytesRead;
 @end
 
+@interface AFHTTPRequestOperation (AFInternal)
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response;
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
+@end
+
 typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(NSInteger bytes, long long totalBytes, long long totalBytesExpected, long long totalBytesReadForFile, long long totalBytesExpectedToReadForFile);
 
 @interface AFDownloadRequestOperation() {
