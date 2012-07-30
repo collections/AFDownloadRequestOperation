@@ -190,7 +190,11 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(NSInteger bytes
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
     self.completionBlock = ^ {
         NSError *localError = nil;
-        if([self isCancelled]) {
+        if (self.error) {
+            dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
+                failure(self, self.error);
+            });
+        } else if ([self isCancelled]) {
             // should we clean up? most likely we don't.
             if (self.isDeletingTempFileOnCancel) {
                 [self deleteTempFileWithError:&localError];
@@ -199,7 +203,7 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(NSInteger bytes
                 }
             }
             return;
-        }else {
+        } else {
             // move file to final position and capture error        
             @synchronized(self) {
                 NSFileManager *fm = [NSFileManager new];
@@ -215,13 +219,6 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(NSInteger bytes
                     _fileError = localError;
                 }
             }
-        }
-        
-        if (self.error) {
-            dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
-                failure(self, self.error);
-            });
-        } else {
             dispatch_async(self.successCallbackQueue ?: dispatch_get_main_queue(), ^{
                 success(self, _targetPath);
             });
