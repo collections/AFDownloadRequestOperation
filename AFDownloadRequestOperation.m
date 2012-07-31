@@ -209,7 +209,7 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(NSInteger bytes
                 NSFileManager *fm = [NSFileManager new];
                 NSInteger suffix = 1;
                 NSString *destinationPath = _targetPath;
-                while ([fm fileExistsAtPath:destinationPath) {
+                while ([fm fileExistsAtPath:destinationPath]) {
                     destinationPath = [_targetPath stringByAppendingFormat:@"-%ld", suffix];
                     suffix++;
                 }
